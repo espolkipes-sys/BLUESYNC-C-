@@ -9,7 +9,7 @@ namespace BLUESYNC_C_
     internal class diccionarios
     {
         // ==========================================
-        // CONFIGURACIÓN Y CATÁLOGOS (Estilo 2do Ciclo)
+        //         CONFIGURACIÓN Y CATÁLOGOS 
         // ==========================================
         public static string rutaArchivo = "comprobantes_dhproyectos.txt";
         public static int max_registros = 100;

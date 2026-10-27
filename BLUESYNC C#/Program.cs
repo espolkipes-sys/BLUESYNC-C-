@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 namespace BLUESYNC_C_
 {
     internal class Program
-    {
-        static void Main(string[] args)
+    {    
+        // MÉTODOS DE FECHA Y HORA
+        public static string ObtenerFechaActual()
         {
+            return DateTime.Now.ToString("yyyy-MM-dd");//parametro ordenado
+        }
+        public static string ObtenerHoraActual()
+        {
+            return DateTime.Now.ToString("HH:mm:ss");//parametro ordenado
+        }
+        static void Main(string[] args)
+        { 
         }
     }
 }
