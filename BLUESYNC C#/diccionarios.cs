@@ -42,7 +42,7 @@ namespace BLUESYNC_C_
         public static string[] telefono = new string[max_registros];
         public static string[] servicio = new string[max_registros];
         public static double[] monto = new double[max_registros];
-        public static double[] fecha = new double[max_registros]; 
+        public static string[] fecha = new string[max_registros];
         public static string[] hora = new string[max_registros];
     }
 }
