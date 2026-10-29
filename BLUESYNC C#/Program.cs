@@ -434,6 +434,100 @@ namespace BLUESYNC_C_
                 Console.WriteLine("  [Error] Entrada no válida. Ingrese solo números mayores a 0 (ejemplo: 15.50).");
             }
         }
+        // 6. BUSCADOR DE COMPROBANTES//
+        public static void BuscarComprobantes()
+        {
+            Console.WriteLine(new string('=', 60));
+            Console.WriteLine("\tBUSCADOR DE COMPROBANTES EMITIDOS");
+            Console.WriteLine(new string('=', 60));
+            if (diccionarios.total_registros == 0)
+            {
+                Console.WriteLine("No existen registros...!!!");
+                return;
+            }
+            Console.Write("Ingrese DNI o RUC a buscar: ");
+            string doc_buscar = Console.ReadLine()?.Trim() ?? "";
+            bool encontrados = false;
+            for (int i = 0; i < diccionarios.total_registros; i++)
+            {
+                if (diccionarios.documento[i] == doc_buscar)
+                {
+                    encontrados = true;
+                    Console.WriteLine(new string('-', 60));
+                    Console.WriteLine($"Nro Comprobante : {diccionarios.nroComp[i]} ({diccionarios.tipoComp[i]})");
+                    Console.WriteLine($"Fecha y Hora    : {diccionarios.fecha[i]} - {diccionarios.hora[i]}");
+                    Console.WriteLine($"Cliente         : {diccionarios.cliente[i]}");
+                    Console.WriteLine($"Documento       : {diccionarios.documento[i]}");
+                    Console.WriteLine($"Detalle Servicio: {diccionarios.servicio[i]}");
+                    Console.WriteLine($"Monto Total     : S/ {diccionarios.monto[i]:F2}");
+                    Console.WriteLine(new string('-', 60));
+                }
+            }
+            if (!encontrados)
+            {
+                Console.WriteLine($"No se encontraron registros para el documento: {doc_buscar}");
+            }
+        }
+        // 7 REPORTE DE VENTAS//
+        public static void ReporteVentas()
+        {
+            Console.WriteLine(new string('-', 60));
+            Console.WriteLine("\t\t\tREPORTE DE VENTAS");
+            Console.WriteLine(new string('-', 60));
+
+            // Validación por si no hay registros
+            if (diccionarios.total_registros == 0)
+            {
+                Console.WriteLine("\tNo hay ventas registradas.");
+                return;
+            }
+            Console.WriteLine("1. Ver todas las ventas");
+            Console.WriteLine("2. Filtrar ventas por fecha (AAAA-MM-DD)");
+            Console.Write("Seleccione (1-2): ");
+            string opc = Console.ReadLine()?.Trim() ?? "";
+            while (opc != "1" && opc != "2")
+            {
+                Console.Write("  [Error] Opción no válida. Por favor, ingrese 1 o 2: ");
+                opc = Console.ReadLine()?.Trim() ?? "";
+            }
+
+            string fecha_filtro = "";
+            if (opc == "2")
+            {
+                Console.Write("Ingrese fecha (Ejemplo: 2026-10-29): ");
+                fecha_filtro = Console.ReadLine()?.Trim() ?? "";
+            }
+
+            double total_recaudado = 0.0;
+            Console.WriteLine("\n" + new string('-', 65));
+            Console.WriteLine($"{"NRO",-12} | {"FECHA",-10} | {"CLIENTE",-15} | {"MONTO",-10}");
+            Console.WriteLine(new string('-', 65));
+
+            bool hay_resultados = false;
+
+            // Recorremos los arreglos paralelos hasta total_registros
+            for (int i = 0; i < diccionarios.total_registros; i++)
+            {
+                // Si la opción es 1 (muestra todo) o si la fecha coincide con el filtro
+                if (opc == "1" || diccionarios.fecha[i] == fecha_filtro)
+                {
+                    hay_resultados = true;
+                    // Cortamos el nombre del cliente a máximo 15 caracteres para no romper  el formato de la tabla
+                    string clienteCorto = diccionarios.cliente[i].Length > 15 ? diccionarios.cliente[i].Substring(0, 15) : diccionarios.cliente[i];   
+                    // Impresión formateada con los anchos de columna correspondientes
+                    Console.WriteLine($"{diccionarios.nroComp[i],-12} | {diccionarios.fecha[i],-10} | {clienteCorto,-15} | S/ {diccionarios.monto[i],7:F2}");
+
+                    total_recaudado += diccionarios.monto[i];
+                }
+            }
+            if (!hay_resultados && opc == "2")
+            {
+                Console.WriteLine($"\n[Aviso] No se encontraron ventas para la fecha: {fecha_filtro}");
+            }
+
+            Console.WriteLine(new string('-', 65));
+            Console.WriteLine($"TOTAL RECAUDADO: S/ {total_recaudado:F2}");
+        }
         static void Main(string[] args)
         {
         }
