@@ -375,6 +375,64 @@ namespace BLUESYNC_C_
             {
                 Console.WriteLine("\n[Aviso] No se seleccionó ningún producto. Operación cancelada.");
             }
+
+        }
+        // 5. CONFIGURACIÓN DE PRECIOS Y CATÁLOGOS
+        public static void ConfigurarCatalogos()
+        {
+            Console.WriteLine("\n--------------------------------------------------");
+            Console.WriteLine("       GESTOR DE PRECIOS DEL SISTEMA              ");
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine("1. Cambiar precio acabado Básico");
+            Console.WriteLine("2. Cambiar tarifa por hora de mantenimiento");
+            Console.WriteLine("3. Cambiar precio Kit de Químicos");
+            Console.WriteLine("4. Regresar");
+            Console.Write("Seleccione (1-4): ");
+            string opc = Console.ReadLine()?.Trim() ?? "";
+            while (opc != "1" && opc != "2" && opc != "3" && opc != "4")
+            {
+                Console.WriteLine("  [Error] Opción no válida. Ingrese un número del 1 al 4.");
+                Console.Write("Seleccione (1-4): ");
+                opc = Console.ReadLine()?.Trim() ?? "";
+            }
+            if (opc == "1")
+            {
+                double nuevo_p = PedirPrecioValido("Nuevo precio x m² para acabado Básico: S/ ");
+                diccionarios.precioBasico = nuevo_p;
+                Console.WriteLine("  [Éxito] Precio actualizado.");
+            }
+            else if (opc == "2")
+            {
+                double nuevo_p = PedirPrecioValido("Nueva tarifa por hora: S/ ");
+                diccionarios.tarifaHora = nuevo_p;
+                Console.WriteLine("  [Éxito] Tarifa actualizada.");
+            }
+            else if (opc == "3")
+            {
+                double nuevo_p = PedirPrecioValido("Nuevo precio Kit de Químicos: S/ ");
+                diccionarios.precioKitQuimicos = nuevo_p;
+                Console.WriteLine("  [Éxito] Precio actualizado.");
+            }
+            else if (opc == "4")
+            {
+                Console.WriteLine("  Regresando al menú principal...");
+                return;
+            }
+        }
+        public static double PedirPrecioValido(string mensaje)
+        {
+            double precio = 0.0;
+            while (true)
+            {
+                Console.Write(mensaje);
+                string entrada = Console.ReadLine()?.Trim() ?? "";
+                if (double.TryParse(entrada, out precio) && precio > 0)
+                {
+                    return precio;
+                }
+
+                Console.WriteLine("  [Error] Entrada no válida. Ingrese solo números mayores a 0 (ejemplo: 15.50).");
+            }
         }
         static void Main(string[] args)
         {
