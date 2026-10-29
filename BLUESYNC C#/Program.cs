@@ -9,7 +9,7 @@ namespace BLUESYNC_C_
 {
     internal class Program
     {
-        // MÉTODOS DE FECHA Y HORA//
+         // 1  MÉTODOS DE FECHA Y HORA//
         public static string ObtenerFechaActual()
         {
             return DateTime.Now.ToString("yyyy-MM-dd"); // parámetro ordenado
@@ -17,8 +17,8 @@ namespace BLUESYNC_C_
         public static string ObtenerHoraActual()
         {
             return DateTime.Now.ToString("HH:mm:ss"); // parámetro ordenado
-        }
-        // CAPTURA DE DATOS DEL CLIENTE//
+        } 
+        // 2  CAPTURA DE DATOS DEL CLIENTE//
         public static (string cliente, string telefono, string correo, string tipo_comp, string documento) CapturarDatosCliente()
         {
             Console.WriteLine("\n--- DATOS DEL CLIENTE ---");
@@ -82,7 +82,7 @@ namespace BLUESYNC_C_
         }
         // Definición de la ruta del archivo plano
         public static string rutaArchivo = diccionarios.rutaArchivo;
-        // 1. GUARDAR DATOS EN ARCHIVO
+        // 3. GUARDAR DATOS EN ARCHIVO
         public static void GuardarDatosArchivo()
         {
             Console.WriteLine("***************** GUARDAR COMPROBANTES EN ARCHIVO ****************");
@@ -103,7 +103,7 @@ namespace BLUESYNC_C_
             }
             Console.WriteLine($" [Éxito] {diccionarios.total_registros} comprobante(s) guardado(s) correctamente.");
         }
-        // 2. LEER DATOS DESDE ARCHIVO (MOSTRAR EN CONSOLA)
+        //  LEER DATOS DESDE ARCHIVO (MOSTRAR EN CONSOLA)
         public static void LeerDatosArchivo()
         {
             Console.WriteLine("***************** LEER DATOS DESDE ARCHIVO ****************");
@@ -130,7 +130,7 @@ namespace BLUESYNC_C_
                 }
             }
         }
-        // 3. CARGAR DATOS DESDE ARCHIVO A LA MEMORIA RAM
+        //  CARGAR DATOS DESDE ARCHIVO A LA MEMORIA RAM
         public static void CargarDatosArchivo()
         {
             if (!File.Exists(diccionarios.rutaArchivo))
@@ -160,6 +160,221 @@ namespace BLUESYNC_C_
                 }
             }
             Console.WriteLine($" [Info] {diccionarios.total_registros} registro(s) recuperado(s) del archivo local.");
+        }
+        // 4.  SERVICIOS  //
+        // SERVICIO DE CONSTRUCCIÓN DE PISCINAS
+        public static void ServicioConstruccion()
+        {
+            Console.WriteLine("\n==================================================");
+            Console.WriteLine("      1. SERVICIO DE CONSTRUCCIÓN DE PISCINAS      ");
+            Console.WriteLine("==================================================");
+            (string cliente, string telefono, string correo, string tipo_comp, string documento) = CapturarDatosCliente();
+
+            Console.WriteLine("\n--- REQUERIMIENTOS DEL SERVICIO ---");
+            Console.Write("Largo (m): ");
+            double largo = Convert.ToDouble(Console.ReadLine());
+            Console.Write("Ancho (m): ");
+            double ancho = Convert.ToDouble(Console.ReadLine());
+            double area = largo * ancho;
+
+            Console.WriteLine("\nSeleccione Tipo de Acabado:");
+            Console.WriteLine($"1. Básico (S/ {diccionarios.precioBasico} x m²)");
+            Console.WriteLine($"2. Premium (S/ {diccionarios.precioPremium} x m²)");
+            Console.Write("Opción (1-2): ");
+            string opc_acabado = Console.ReadLine()?.Trim() ?? "";
+
+            string acabado_nombre = (opc_acabado == "2") ? "Premium" : "Básico";
+            double costo_material = area * (opc_acabado == "2" ? diccionarios.precioPremium : diccionarios.precioBasico);
+
+            Console.WriteLine("\n--- SELECCIÓN DE MANO DE OBRA ---");
+            for (int i = 0; i < diccionarios.idMo.Length; i++)
+            {
+                Console.WriteLine($"{diccionarios.idMo[i]}. {diccionarios.nomMo[i]} - S/ {diccionarios.costoMo[i]:F2} por día");
+            }
+
+            Console.Write("Seleccione cuadrilla (1-3): ");
+            string opc_mo = Console.ReadLine()?.Trim() ?? "";
+            while (opc_mo != "1" && opc_mo != "2" && opc_mo != "3")
+            {
+                Console.Write("  [Error] Ingrese opción 1, 2 o 3: ");
+                opc_mo = Console.ReadLine()?.Trim() ?? "";
+            }
+
+            // Convertimos la opción (1, 2, 3) a índice de arreglo (0, 1, 2)
+            int indexMo = Convert.ToInt32(opc_mo) - 1;
+            double costoDiaMo = diccionarios.costoMo[indexMo];
+
+            Console.Write("Días estimados de construcción: ");
+            int dias =int.Parse(Console.ReadLine());
+            double costo_mo = costoDiaMo * dias;
+
+            double monto_total = costo_material + costo_mo;
+            string fecha = ObtenerFechaActual();
+            string hora = ObtenerHoraActual();
+
+            // Generador de número de comprobante secuencial
+            string nro_comp = $"B001-{diccionarios.total_registros + 1:D5}";
+            string detalle = $"Construcción {acabado_nombre} ({area:F1}m²)";
+
+            // Verificamos si hay espacio disponible
+            if (diccionarios.total_registros >= diccionarios.max_registros)
+            {
+                Console.WriteLine("  [Error] Se ha alcanzado el límite máximo de registros.");
+                return;
+            }
+
+            // Llamada al método Registrar encapsulado en diccionarios.cs
+            diccionarios.Registrar(nro_comp, tipo_comp, cliente, documento, telefono, detalle, monto_total, fecha, hora);
+
+            // Guardamos automáticamente en el archivo plano
+            GuardarDatosArchivo();
+
+            Console.WriteLine($"\n[Éxito] Comprobante {nro_comp} generado el {fecha} a las {hora}");
+            Console.WriteLine($"        Total a pagar: S/ {monto_total:N2}");
+        }
+        // SERVICIO DE MANTENIMIENTO DE PISCINA//   
+        public static void ServicioMantenimiento()
+        {
+            Console.WriteLine("\n==================================================");
+            Console.WriteLine("      2. SERVICIO DE MANTENIMIENTO DE PISCINAS    ");
+            Console.WriteLine("==================================================");
+            (string cliente, string telefono, string correo, string tipo_comp, string documento) = CapturarDatosCliente();
+            Console.WriteLine("\n--- REQUERIMIENTOS DEL SERVICIO ---");
+            Console.Write("Horas de trabajo: ");
+            double horas = double.Parse(Console.ReadLine());
+            double costo_base = horas * diccionarios.tarifaHora;
+
+            Console.Write($"¿Incluir Kit de Químicos (S/ {diccionarios.precioKitQuimicos})? (S/N): ");
+            string incluir = Console.ReadLine()?.Trim().ToUpper() ?? "";
+            while (incluir != "S" && incluir != "N")
+            {
+                Console.Write("  [Error] Ingrese S o N: ");
+                incluir = Console.ReadLine()?.Trim().ToUpper() ?? "";
+            }
+            double costo_kit = (incluir == "S") ? diccionarios.precioKitQuimicos : 0.0;
+            double monto_total = costo_base + costo_kit;
+            string fecha = ObtenerFechaActual();
+            string hora = ObtenerHoraActual();
+            string nro_comp = $"B001-{diccionarios.total_registros + 1:D5}";
+            string detalle = "Mantenimiento (" + horas + " horas)";
+
+            if (diccionarios.total_registros >= diccionarios.max_registros)
+            {
+                Console.WriteLine("  [Error] Se ha alcanzado el límite máximo de registros.");
+                return;
+            }
+            diccionarios.Registrar(nro_comp, tipo_comp, cliente, documento, telefono, detalle, monto_total, fecha, hora);
+
+            GuardarDatosArchivo();
+            Console.WriteLine($"\n[Éxito] Comprobante {nro_comp} generado el {fecha} a las {hora}");
+            Console.WriteLine($"        Total a pagar: S/ {monto_total}");
+        }
+        //  SERVICIO DE SUMINISTRO DE MATERIALES//
+        public static void ServicioSuministros()
+        {
+            Console.WriteLine("\n==================================================");
+            Console.WriteLine("      3. SERVICIO DE SUMINISTRO DE MATERIALES    ");
+            Console.WriteLine("==================================================");
+            (string cliente, string telefono, string correo, string tipo_comp, string documento) = CapturarDatosCliente();
+
+            double monto_total = 0.0;
+            string detalle_items = "";
+            bool primer_item = true;
+
+            while (true)
+            {
+                Console.WriteLine("\n--- CATÁLOGO DE MATERIALES ---");
+                for (int i = 0; i < diccionarios.idMat.Length; i++)
+                {
+                    Console.WriteLine(diccionarios.idMat[i] + ". " + diccionarios.nomMat[i] + " - S/ " + diccionarios.precMat[i] + " (Stock: " + diccionarios.stockMat[i] + ")");
+                }
+                Console.WriteLine("0. Finalizar compra");
+
+                Console.Write("\nSeleccione producto a comprar (0-4): ");
+                string sel = Console.ReadLine()?.Trim() ?? "";
+
+                if (sel == "0")
+                    break;
+                // 1. Buscamos si la opción ingresada existe en el catálogo
+                int indexMat = -1;
+                for (int i = 0; i < diccionarios.idMat.Length; i++)
+                {
+                    if (diccionarios.idMat[i] == sel)
+                    {
+                        indexMat = i;
+                        break;
+                    }
+                }
+                // Si no se encontró, la opción no es válida
+                if (indexMat == -1)
+                {
+                    Console.WriteLine("  [Error] Opción no válida. Ingrese un número del catálogo (0 al 4).");
+                    continue;
+                }
+                //  Verificamos si hay stock disponible
+                if (diccionarios.stockMat[indexMat] <= 0)
+                {
+                    Console.WriteLine("  [Aviso] Producto sin stock disponible.");
+                    continue;
+                }
+                //  Pedimos la cantidad que desea llevar
+                Console.Write("Cantidad para '" + diccionarios.nomMat[indexMat] + "': ");
+                int cant = int.Parse(Console.ReadLine());
+                if (cant > diccionarios.stockMat[indexMat])
+                {
+                    Console.WriteLine("  [Error] Solo quedan " + diccionarios.stockMat[indexMat] + " unidades.");
+                    continue;
+                }
+                //  Restamos del stock en el diccionario
+                diccionarios.stockMat[indexMat] = diccionarios.stockMat[indexMat] - cant;
+
+                //  Calculamos el subtotal y lo sumamos al total general
+                double subtotal = cant * diccionarios.precMat[indexMat];
+                monto_total = monto_total + subtotal;
+
+                //  Juntamos el nombre y la cantidad para el detalle del comprobante
+                string itemActual = cant + "x " + diccionarios.nomMat[indexMat];
+                if (primer_item)
+                {
+                    detalle_items = itemActual;
+                    primer_item = false;
+                }
+                else
+                {
+                    detalle_items = detalle_items + ", " + itemActual;
+                }
+
+                Console.WriteLine("  -> Añadido: Subtotal S/ " + subtotal);
+            }
+
+            // Si compró al menos un producto, generamos el comprobante
+            if (monto_total > 0)
+            {
+                string fecha = ObtenerFechaActual();
+                string hora = ObtenerHoraActual();  
+
+                // Número de comprobante con formato D5
+                string nro_comp = $"B001-{diccionarios.total_registros + 1:D5}";
+                string detalle = "Suministro: " + detalle_items;
+
+                // Verificamos espacio disponible
+                if (diccionarios.total_registros >= diccionarios.max_registros)
+                {
+                    Console.WriteLine("  [Error] Se ha alcanzado el límite máximo de registros.");
+                    return;
+                }
+
+                // Guardado directo en el diccionario y en el archivo
+                diccionarios.Registrar(nro_comp, tipo_comp, cliente, documento, telefono, detalle, monto_total, fecha, hora);
+                GuardarDatosArchivo();
+
+                Console.WriteLine("\n[Éxito] Comprobante " + nro_comp + " generado el " + fecha + " a las " + hora);
+                Console.WriteLine("        Total a pagar: S/ " + monto_total);
+            }
+            else
+            {
+                Console.WriteLine("\n[Aviso] No se seleccionó ningún producto. Operación cancelada.");
+            }
         }
         static void Main(string[] args)
         {

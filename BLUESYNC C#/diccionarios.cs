@@ -44,8 +44,28 @@ namespace BLUESYNC_C_
         public static double[] monto = new double[max_registros];
         public static string[] fecha = new string[max_registros];
         public static string[] hora = new string[max_registros];
-    }
-}
+     
 
+    // Método para registrar un comprobante directamente en los arreglos de diccionarios
+        public static void Registrar(string nro, string tipo, string cli, string doc, string telf, string serv, double mon, string fec, string hor)
+        {
+            if (total_registros < max_registros)
+            {
+                nroComp[total_registros] = nro;
+                tipoComp[total_registros] = tipo;
+                cliente[total_registros] = cli;
+                documento[total_registros] = doc;
+                telefono[total_registros] = telf;
+                servicio[total_registros] = serv;
+                monto[total_registros] = mon;
+                fecha[total_registros] = fec;
+                hora[total_registros] = hor;
+
+                total_registros++;
+            }
+        }
+    }
+
+}
 
 
