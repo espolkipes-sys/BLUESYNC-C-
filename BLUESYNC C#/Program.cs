@@ -9,7 +9,7 @@ namespace BLUESYNC_C_
 {
     internal class Program
     {
-         // 1  MÉTODOS DE FECHA Y HORA//
+        // 1  MÉTODOS DE FECHA Y HORA//
         public static string ObtenerFechaActual()
         {
             return DateTime.Now.ToString("yyyy-MM-dd"); // parámetro ordenado
@@ -17,7 +17,7 @@ namespace BLUESYNC_C_
         public static string ObtenerHoraActual()
         {
             return DateTime.Now.ToString("HH:mm:ss"); // parámetro ordenado
-        } 
+        }
         // 2  CAPTURA DE DATOS DEL CLIENTE//
         public static (string cliente, string telefono, string correo, string tipo_comp, string documento) CapturarDatosCliente()
         {
@@ -205,7 +205,7 @@ namespace BLUESYNC_C_
             double costoDiaMo = diccionarios.costoMo[indexMo];
 
             Console.Write("Días estimados de construcción: ");
-            int dias =int.Parse(Console.ReadLine());
+            int dias = int.Parse(Console.ReadLine());
             double costo_mo = costoDiaMo * dias;
 
             double monto_total = costo_material + costo_mo;
@@ -351,7 +351,7 @@ namespace BLUESYNC_C_
             if (monto_total > 0)
             {
                 string fecha = ObtenerFechaActual();
-                string hora = ObtenerHoraActual();  
+                string hora = ObtenerHoraActual();
 
                 // Número de comprobante con formato D5
                 string nro_comp = $"B001-{diccionarios.total_registros + 1:D5}";
@@ -513,7 +513,7 @@ namespace BLUESYNC_C_
                 {
                     hay_resultados = true;
                     // Cortamos el nombre del cliente a máximo 15 caracteres para no romper  el formato de la tabla
-                    string clienteCorto = diccionarios.cliente[i].Length > 15 ? diccionarios.cliente[i].Substring(0, 15) : diccionarios.cliente[i];   
+                    string clienteCorto = diccionarios.cliente[i].Length > 15 ? diccionarios.cliente[i].Substring(0, 15) : diccionarios.cliente[i];
                     // Impresión formateada con los anchos de columna correspondientes
                     Console.WriteLine($"{diccionarios.nroComp[i],-12} | {diccionarios.fecha[i],-10} | {clienteCorto,-15} | S/ {diccionarios.monto[i],7:F2}");
 
@@ -530,6 +530,66 @@ namespace BLUESYNC_C_
         }
         static void Main(string[] args)
         {
+            CargarDatosArchivo();
+            int opc = 0;
+            while (opc != 10)
+            {
+                Console.Clear();
+                Console.WriteLine(new string('=', 52));
+                Console.WriteLine("        DH PROYECTOS CONTRATISTAS - BLUESYNC        ");
+                Console.WriteLine("                    MENÚ PRINCIPAL                  ");
+                Console.WriteLine(new string('=', 52));
+                Console.WriteLine("[1] Servicio de construcción");
+                Console.WriteLine("[2] Servicio de mantenimiento");
+                Console.WriteLine("[3] Servicio de suministro de materiales");
+                Console.WriteLine("[4] Configurar catálogos y precios");
+                Console.WriteLine("[5] Buscar historial de comprobantes");
+                Console.WriteLine("[6] Reportes de Ventas");
+                Console.WriteLine("[7] Guardar datos en archivo");
+                Console.WriteLine("[8] Leer datos desde archivo");
+                Console.WriteLine("[9] Cargar datos desde archivo");
+                Console.WriteLine("[10] Salir");
+                Console.WriteLine(new string('=', 52));
+
+                Console.Write("Seleccione una opción [1-10]: ");
+                string entrada = Console.ReadLine()?.Trim() ?? "";
+
+                // Validación defensiva para que el programa no falle si escriben letras o espacios
+                if (!int.TryParse(entrada, out opc))
+                {
+                    Console.WriteLine("\n[Error] Ingrese un número válido del 1 al 10.");
+                    Console.WriteLine("\nPresione cualquier tecla para continuar...");
+                    Console.ReadKey();
+                    continue;
+                }
+                Console.Clear();
+
+                switch (opc)
+                {
+                    case 1:
+                        ServicioConstruccion(); break;
+                    case 2:
+                        ServicioMantenimiento(); break;
+                    case 3:
+                        ServicioSuministros(); break;
+                    case 4:
+                        ConfigurarCatalogos(); break;
+                    case 5:
+                        BuscarComprobantes(); break;
+                    case 6:
+                        ReporteVentas(); break;
+                    case 7:
+                        GuardarDatosArchivo(); break;
+                    case 8:
+                        LeerDatosArchivo(); break;
+                    case 9:
+                        CargarDatosArchivo(); break;
+                    case 10:
+                        GuardarDatosArchivo(); // Guarda automáticamente antes de salir por seguridad
+                        Console.WriteLine("\n¡Gracias por utilizar el sistema BlueSync!");
+                        break;
+                }
+            }
         }
     }
 }
